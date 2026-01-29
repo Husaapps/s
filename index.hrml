@@ -4,37 +4,45 @@
 <meta charset="UTF-8">
 <title>Text to Video Maker Online</title>
 
-<meta name="description" content="Create animated videos from text online. Customize fonts, colors, backgrounds, music, and export video directly in your browser.">
+<meta name="description" content="Create animated videos from text online. Customize fonts, colors, background images, music, and export video directly in your browser.">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
 
 <script type="application/ld+json">
 {
- "@context": "https://schema.org",
- "@type": "SoftwareApplication",
- "name": "Text to Video Maker",
- "applicationCategory": "MultimediaApplication",
- "operatingSystem": "Web Browser",
- "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+ "@context":"https://schema.org",
+ "@type":"SoftwareApplication",
+ "name":"Text to Video Maker",
+ "applicationCategory":"MultimediaApplication",
+ "operatingSystem":"Web Browser"
 }
 </script>
+
+<style>
+*{box-sizing:border-box;font-family:system-ui,sans-serif}
+body{margin:0;background:#0f172a;color:#fff}
+header{text-align:center;padding:2.5rem 1rem;background:linear-gradient(135deg,#2563eb,#1e40af)}
+main{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:1rem}
+.controls{display:flex;flex-direction:column;gap:.6rem}
+textarea{min-height:110px;padding:.6rem}
+input,select,button{padding:.5rem}
+button{background:#22c55e;border:0;font-weight:bold;cursor:pointer}
+canvas{background:#000;max-width:100%}
+footer{text-align:center;font-size:.8rem;padding:1rem}
+@media(max-width:768px){main{grid-template-columns:1fr}}
+</style>
 </head>
 
 <body>
 
-<header class="hero">
+<header>
   <h1>Text to Video Maker</h1>
-  <p>Create animated videos from text — fast, free & online</p>
+  <p>Create animated videos from text directly in your browser</p>
 </header>
 
-<main class="app">
-
+<main>
 <section class="controls">
+<textarea id="text" placeholder="Enter your text..."></textarea>
 
-<textarea id="text" placeholder="Enter your text here..."></textarea>
-
-<label>Font</label>
 <select id="font">
   <option>Arial</option>
   <option>Georgia</option>
@@ -44,13 +52,10 @@
 </select>
 
 <label>Font Size</label>
-<input type="range" id="fontSize" min="20" max="120" value="48">
+<input type="range" id="fontSize" min="24" max="120" value="48">
 
 <label>Text Color</label>
 <input type="color" id="textColor" value="#ffffff">
-
-<label>Text Glow</label>
-<input type="checkbox" id="glow">
 
 <label>Background Color</label>
 <input type="color" id="bgColor" value="#000000">
@@ -77,19 +82,108 @@
 <input type="number" id="duration" value="5" min="1">
 
 <button id="export">Generate Video</button>
-
 </section>
 
-<section class="preview">
-  <canvas id="canvas" width="720" height="720"></canvas>
+<section>
+<canvas id="canvas" width="720" height="720"></canvas>
 </section>
-
 </main>
 
 <footer>
-<p>© 2026 Text to Video Tool • Built with HTML5 & JavaScript</p>
+© 2026 Text to Video Tool
 </footer>
 
-<script src="script.js"></script>
+<script>
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+let bgImg=null,audio=null;
+
+bgImage.onchange=e=>{
+  bgImg=new Image();
+  bgImg.src=URL.createObjectURL(e.target.files[0]);
+};
+
+music.onchange=e=>{
+  audio=new Audio(URL.createObjectURL(e.target.files[0]));
+};
+
+function animate(text,mode,t,x,y){
+  switch(mode){
+    case"fade":
+      ctx.globalAlpha=Math.min(t/1000,1);
+      ctx.fillText(text,x,y);
+      ctx.globalAlpha=1;
+      break;
+    case"slide":
+      ctx.fillText(text,x-400+t*.4,y);
+      break;
+    case"zoom":
+      ctx.save();
+      ctx.translate(x,y);
+      let s=Math.min(t/700,1);
+      ctx.scale(s,s);
+      ctx.fillText(text,0,0);
+      ctx.restore();
+      break;
+    case"type":
+      ctx.fillText(text.substring(0,Math.floor(t/80)),x,y);
+      break;
+    case"wave":
+      [...text].forEach((c,i)=>{
+        ctx.fillText(c,x-text.length*14+i*28,y+Math.sin(t/200+i)*20);
+      });
+      break;
+    case"bounce":
+      ctx.fillText(text,x,y+Math.sin(t/150)*30);
+      break;
+    case"rotate":
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate(t/800);
+      ctx.fillText(text,0,0);
+      ctx.restore();
+      break;
+    case"shake":
+      ctx.fillText(text,x+(Math.random()-0.5)*10,y+(Math.random()-0.5)*10);
+      break;
+  }
+}
+
+export.onclick=()=>{
+  const dur=duration.value*1000;
+  const stream=canvas.captureStream(30);
+  const rec=new MediaRecorder(stream);
+  const chunks=[];
+  rec.ondataavailable=e=>chunks.push(e.data);
+  rec.onstop=()=>{
+    const blob=new Blob(chunks,{type:"video/webm"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="text-video.webm";
+    a.click();
+  };
+  rec.start();
+  if(audio) audio.play();
+
+  const start=Date.now();
+  const loop=setInterval(()=>{
+    const t=Date.now()-start;
+    ctx.fillStyle=bgColor.value;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    if(bgImg) ctx.drawImage(bgImg,0,0,canvas.width,canvas.height);
+    ctx.fillStyle=textColor.value;
+    ctx.font=`${fontSize.value}px ${font.value}`;
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    animate(text.value,animation.value,t,canvas.width/2,canvas.height/2);
+    if(t>dur){
+      clearInterval(loop);
+      rec.stop();
+      if(audio) audio.pause();
+    }
+  },33);
+};
+</script>
+
 </body>
 </html>
