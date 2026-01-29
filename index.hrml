@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Text to Video Maker Tool</title>
+<meta name="description" content="Create videos from text online. Customize fonts, colors, background images, and music. Export video directly from your browser.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "SoftwareApplication",
+ "name": "Text to Video Maker",
+ "applicationCategory": "MultimediaApplication",
+ "operatingSystem": "Web Browser"
+}
+</script>
+</head>
+
+<body>
+<header class="hero">
+  <h1>Text to Video Maker</h1>
+  <p>Create stunning videos from text in seconds</p>
+</header>
+
+<main class="tool">
+  <section class="controls">
+    <textarea id="textInput" placeholder="Enter your text..."></textarea>
+
+    <label>Font</label>
+    <select id="fontSelect">
+      <option>Arial</option>
+      <option>Georgia</option>
+      <option>Verdana</option>
+      <option>Courier New</option>
+    </select>
+
+    <label>Text Color</label>
+    <input type="color" id="textColor">
+
+    <label>Background Color</label>
+    <input type="color" id="bgColor">
+
+    <label>Background Image</label>
+    <input type="file" id="bgImage" accept="image/*">
+
+    <label>Background Music</label>
+    <input type="file" id="bgMusic" accept="audio/*">
+
+    <label>Duration (seconds)</label>
+    <input type="number" id="duration" value="5" min="1">
+
+    <button id="recordBtn">Generate Video</button>
+  </section>
+
+  <section class="preview">
+    <canvas id="canvas" width="720" height="720"></canvas>
+  </section>
+</main>
+
+<footer>
+  <p>© 2026 Text to Video Maker</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
