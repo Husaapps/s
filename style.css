@@ -1,7 +1,4 @@
-* {
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
-}
+* { box-sizing: border-box; font-family: system-ui, sans-serif; }
 
 body {
   margin: 0;
@@ -12,10 +9,10 @@ body {
 .hero {
   text-align: center;
   padding: 3rem 1rem;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: linear-gradient(135deg,#2563eb,#1e40af);
 }
 
-.tool {
+.app {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -25,18 +22,18 @@ body {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: .6rem;
 }
 
 textarea {
   min-height: 120px;
-  padding: 0.5rem;
+  padding: .6rem;
 }
 
 button {
   background: #22c55e;
   border: none;
-  padding: 0.8rem;
+  padding: .9rem;
   font-weight: bold;
   cursor: pointer;
 }
@@ -48,18 +45,16 @@ button {
 }
 
 canvas {
-  background: #000;
   max-width: 100%;
+  background: #000;
 }
 
 footer {
   text-align: center;
   padding: 1rem;
-  font-size: 0.8rem;
+  font-size: .8rem;
 }
 
-@media (max-width: 768px) {
-  .tool {
-    grid-template-columns: 1fr;
-  }
+@media(max-width:768px){
+  .app { grid-template-columns: 1fr; }
 }
